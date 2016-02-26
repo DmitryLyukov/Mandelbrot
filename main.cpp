@@ -1,5 +1,6 @@
-#include "mandelbrot.hpp"
+#include <string>
 
+#include "mandelbrot.hpp"
 
 int main(int argc, char* argv[]) {
     
@@ -11,7 +12,7 @@ int main(int argc, char* argv[]) {
         height_screen = atol(argv[2]);
     }
     
-    char* path_to_file = "mandelbrot.png";
+    std::string path_to_file = "mandelbrot.png";
     if (argc > 3) {
         path_to_file = argv[3];
     }
@@ -30,7 +31,7 @@ int main(int argc, char* argv[]) {
         y2 = atof(argv[8]);
     }
     
-    painting(x1, x2, y1, y2, width_screen, height_screen, path_to_file, progress_bar    );
+    painting(x1, x2, y1, y2, width_screen, height_screen, path_to_file.c_str(), progress_bar);
     
     return 0;
 }
