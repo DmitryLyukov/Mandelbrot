@@ -16,16 +16,21 @@ int main(int argc, char* argv[]) {
         path_to_file = argv[3];
     }
     
-    double x1 = -2, x2 = 1;
-    double y1 = -1, y2 = 1;
-    if (argc > 7) {
-        x1 = atof(argv[4]);
-        x2 = atof(argv[5]);
-        y1 = atof(argv[6]);
-        y2 = atof(argv[7]);
+    bool progress_bar = false;
+    if (argc > 4) {
+        progress_bar = atoi(argv[4]);
     }
     
-    painting(x1, x2, y1, y2, width_screen, height_screen, path_to_file);
+    double x1 = -2, x2 = 1;
+    double y1 = -1, y2 = 1;
+    if (argc > 8) {
+        x1 = atof(argv[5]);
+        x2 = atof(argv[6]);
+        y1 = atof(argv[7]);
+        y2 = atof(argv[8]);
+    }
+    
+    painting(x1, x2, y1, y2, width_screen, height_screen, path_to_file, progress_bar    );
     
     return 0;
 }
