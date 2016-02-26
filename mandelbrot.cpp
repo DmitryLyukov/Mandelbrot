@@ -3,6 +3,10 @@
 
 int iter_for_point(const std::complex<double> &c, const int MAX_ITER) {
     
+    if (abs(c - 0.25) * 2 < 1 - cos(arg(c - 0.25))) {
+        return MAX_ITER;
+    }
+    
     int i = 0;
     std::complex<double> z_i = 0;
     double sqr_abs = pow(real(z_i), 2) + pow(imag(z_i), 2);
@@ -29,7 +33,6 @@ void painting(const double x1, const double x2,
         const double y1, const double y2,
         const int32_t width, const int32_t height,
         const char* file_name, const bool progress_bar) {
-    
     
     cimg_library::CImg<unsigned char> img(width, height, 1, 3);
     
