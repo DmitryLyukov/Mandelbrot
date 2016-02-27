@@ -6,12 +6,15 @@
 #include <complex>
 #include <cstdint>
 #include <iostream>
+
 #include "CImg.h"
 
 
 int iter_for_point(const std::complex<double> &c, const int MAX_ITER = 500);
 
-double norm_iter_for_point(const double Re, const double Im, const int MAX_ITER = 500);
+double norm_iter_for_point(const double Re, const double Im, 
+                           const int MAX_ITER = 500
+);
 
 void painting(const double x1, const double x2,
         const double y1, const double y2,
