@@ -3,7 +3,8 @@
 
 int iter_for_point(const std::complex<double> &c, const int MAX_ITER) {
     
-    if (abs(c - 0.25) * 2 < 1 - cos(arg(c - 0.25))) {
+    const double abs_c = abs(c - 0.25);
+    if (abs_c * 2 < 1 - (real(c) - 0.25) / abs_c) {
         return MAX_ITER;
     }
     
