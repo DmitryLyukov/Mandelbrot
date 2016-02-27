@@ -1,0 +1,17 @@
+language: cpp
+dist: trusty
+compiler:
+- g++
+os:
+- linux
+- osx
+before_script:
+- git clone https://github.com/dtschump/CImg.git CImg_lib
+- mv CImg_lib/CImg.h CImg.h
+script: make
+branches:
+  only:
+  - master
+  - "/^v\\d+\\./"
+notifications:
+  email: true
