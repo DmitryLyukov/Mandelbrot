@@ -13,8 +13,10 @@
 int iter_for_point(const std::complex<double> &c, const int MAX_ITER = 500);
 
 double norm_iter_for_point(const double Re, const double Im, 
-                           const int MAX_ITER = 500
-);
+                           const int MAX_ITER = 500);
+
+void find_colors(const double norm_clr,
+        unsigned char &red, unsigned char &green, unsigned char &blue);
 
 void painting(const double x1, const double x2,
         const double y1, const double y2,

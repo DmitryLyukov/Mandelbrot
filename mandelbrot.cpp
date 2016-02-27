@@ -33,6 +33,18 @@ double norm_iter_for_point(const double Re, const double Im, const int MAX_ITER)
 }
 
 
+void find_colors(const double norm_clr,
+        unsigned char &red, unsigned char &green, unsigned char &blue) {
+            
+    const double clr = pow(1 - norm_clr, 3);
+    const unsigned char color = static_cast<unsigned char>(clr * 255);
+    
+    red   = color;
+    green = color;
+    blue  = color;
+}
+
+
 void painting(const double x1, const double x2,
         const double y1, const double y2,
         const int32_t width, const int32_t height,
@@ -64,15 +76,16 @@ void painting(const double x1, const double x2,
         }
         
         for (int32_t j = 0; j < width; ++j) {
-            const double norm_pnt = norm_iter_for_point(x, y);
+            const double norm_clr = 1. - norm_iter_for_point(x, y);
+            
+            unsigned char red, green, blue;
+            find_colors(norm_clr, red, green, blue);
+            
+            img(j, i, 0) = red;
+            img(j, i, 1) = green;
+            img(j, i, 2) = blue;
+            
             x += dx;
-            
-            const double clr = pow(1 - norm_pnt, 3);
-            const unsigned char color = (unsigned char)(clr * 255);
-            img(j, i, 0) = color;           //red
-            img(j, i, 1) = color;           //green
-            img(j, i, 2) = color;           //blue
-            
         }
         
         y -= dy;
