@@ -8,8 +8,8 @@ int iter_for_point(const std::complex<double> &c, const int MAX_ITER) {
         return MAX_ITER;
     }
     
-    int i = 0;
-    std::complex<double> z_i = 0;
+    int i = 1;
+    std::complex<double> z_i = c;
     double sqr_abs = pow(real(z_i), 2) + pow(imag(z_i), 2);
 
     while ((i < MAX_ITER) && (sqr_abs < 4)) {
