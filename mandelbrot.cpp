@@ -7,6 +7,9 @@ int iter_for_point(const std::complex<double> &c, const int MAX_ITER) {
     if (abs_c * 2 < 1 - (real(c) - 0.25) / abs_c) {
         return MAX_ITER;
     }
+    if (real(c + 1.) * real(c + 1.) + imag(c) * imag(c) < 1/16.) {
+        return MAX_ITER;
+    }
     
     int i = 1;
     std::complex<double> z_i = c;
