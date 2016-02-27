@@ -34,9 +34,10 @@ double norm_iter_for_point(const double Re, const double Im, const int MAX_ITER)
 
 
 void find_colors(const double norm_clr,
-        unsigned char &red, unsigned char &green, unsigned char &blue) {
+        unsigned char &red, unsigned char &green, unsigned char &blue,
+        const int palette) {
             
-    const double clr = pow(1 - norm_clr, 3);
+    const double clr = pow(1 - norm_clr, palette);
     const unsigned char color = static_cast<unsigned char>(clr * 255);
     
     red   = color;
@@ -48,7 +49,8 @@ void find_colors(const double norm_clr,
 void painting(const double x1, const double x2,
         const double y1, const double y2,
         const int32_t width, const int32_t height,
-        const char* file_name, const bool progress_bar) {
+        const char* file_name, const bool progress_bar,
+        const int palette) {
     
     cimg_library::CImg<unsigned char> img(width, height, 1, 3);
     
@@ -79,7 +81,7 @@ void painting(const double x1, const double x2,
             const double norm_clr = 1. - norm_iter_for_point(x, y);
             
             unsigned char red, green, blue;
-            find_colors(norm_clr, red, green, blue);
+            find_colors(norm_clr, red, green, blue, palette);
             
             img(j, i, 0) = red;
             img(j, i, 1) = green;
