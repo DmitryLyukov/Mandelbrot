@@ -37,7 +37,7 @@ void find_colors(const double norm_clr,
         unsigned char &red, unsigned char &green, unsigned char &blue,
         const int palette) {
             
-    const double clr = pow(1 - norm_clr, palette);
+    const double clr = pow(norm_clr, palette);
     const unsigned char color = static_cast<unsigned char>(clr * 255);
     
     red   = color;
