@@ -15,13 +15,12 @@ int iter_for_point(const double re, const double im, const int MAX_ITER) {
     
     int i = 1;
     std::complex<double> z_i = c;
-    double sqr_abs = pow(real(z_i), 2) + pow(imag(z_i), 2);
+    double sqr_abs = re * re + im * im;
 
     while ((i < MAX_ITER) && (sqr_abs < 4)) {
-        std::complex<double> sqr = z_i * z_i;
-        z_i = sqr + c;
+        z_i = z_i * z_i + c;
         ++i;
-        sqr_abs = pow(real(z_i), 2) + pow(imag(z_i), 2);
+        sqr_abs = real(z_i) * real(z_i) + imag(z_i) * imag(z_i);
     }
     
     return i;
