@@ -47,10 +47,12 @@ int main(int argc, char* argv[]) {
             continue;
         }
     }
-        
+    
+    std::vector<ColorMapElement> colormap(MAX_ITER + 1);
+    
     painting(x1, x2, y1, y2, width_screen, height_screen, 
-             path_to_file.c_str(), progress_bar, palette,
-             MAX_ITER
+             colormap, path_to_file.c_str(), progress_bar,
+             palette, MAX_ITER
     );
     
     return 0;

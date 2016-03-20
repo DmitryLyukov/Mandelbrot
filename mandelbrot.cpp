@@ -1,7 +1,7 @@
 #include "mandelbrot.hpp"
 
 
-int iter_for_point(const double re, const double im, const int MAX_ITER) {
+size_t iter_for_point(const double re, const double im, const size_t MAX_ITER) {
     
     const std::complex<double> c(re, im);
     
@@ -27,23 +27,25 @@ int iter_for_point(const double re, const double im, const int MAX_ITER) {
 }
 
 
-void find_colors(const size_t iter,
-        unsigned char &red, unsigned char &green, unsigned char &blue,
+void find_colors(const size_t iter, ColorMapElement &color_elem,
         const int palette, const size_t MAX_ITER) {
             
     const double norm_iter = 1. - static_cast<double>(iter) / MAX_ITER;
     const double norm_clr = pow(norm_iter, palette);
     const unsigned char color = static_cast<unsigned char>(norm_clr * 255);
     
-    red   = color;
-    green = color;
-    blue  = color;
+    color_elem.red   = color;
+    color_elem.green = color;
+    color_elem.blue  = color;
+    
+    color_elem.use   = true;
 }
 
 
 void painting(const double x1, const double x2,
         const double y1, const double y2,
         const int32_t width, const int32_t height,
+        std::vector<ColorMapElement> &colormap,
         const char* file_name, const bool progress_bar,
         const int palette, const size_t MAX_ITER) {
     
@@ -75,12 +77,13 @@ void painting(const double x1, const double x2,
         for (int32_t j = 0; j < width; ++j) {
             const size_t iter = iter_for_point(x, y, MAX_ITER);
             
-            unsigned char red, green, blue;
-            find_colors(iter, red, green, blue, palette, MAX_ITER);
+            if (!colormap[iter].use) {
+                find_colors(iter, colormap[iter], palette, MAX_ITER);
+            }
             
-            img(j, i, 0) = red;
-            img(j, i, 1) = green;
-            img(j, i, 2) = blue;
+            img(j, i, 0) = colormap[iter].red;
+            img(j, i, 1) = colormap[iter].green;
+            img(j, i, 2) = colormap[iter].blue;
             
             x += dx;
         }
