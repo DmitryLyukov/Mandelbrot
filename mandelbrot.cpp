@@ -1,13 +1,15 @@
 #include "mandelbrot.hpp"
 
 
-int iter_for_point(const std::complex<double> &c, const int MAX_ITER) {
+int iter_for_point(const double re, const double im, const int MAX_ITER) {
+    
+    const std::complex<double> c(re, im);
     
     const double abs_c = abs(c - 0.25);
-    if (abs_c * 2 < 1 - (real(c) - 0.25) / abs_c) {
+    if (abs_c * 2 < 1 - (re - 0.25) / abs_c) {
         return MAX_ITER;
     }
-    if (real(c + 1.) * real(c + 1.) + imag(c) * imag(c) < 1/16.) {
+    if ((re + 1.) * (re + 1.) + im * im < 1/16.) {
         return MAX_ITER;
     }
     
@@ -26,19 +28,13 @@ int iter_for_point(const std::complex<double> &c, const int MAX_ITER) {
 }
 
 
-double norm_iter_for_point(const double Re, const double Im, const int MAX_ITER) {
-    
-    std::complex<double> z(Re, Im);
-    return static_cast<double>(iter_for_point(z, MAX_ITER)) / MAX_ITER;
-}
-
-
-void find_colors(const double norm_clr,
+void find_colors(const size_t iter,
         unsigned char &red, unsigned char &green, unsigned char &blue,
-        const int palette) {
+        const int palette, const size_t MAX_ITER) {
             
-    const double clr = pow(norm_clr, palette);
-    const unsigned char color = static_cast<unsigned char>(clr * 255);
+    const double norm_iter = 1. - static_cast<double>(iter) / MAX_ITER;
+    const double norm_clr = pow(norm_iter, palette);
+    const unsigned char color = static_cast<unsigned char>(norm_clr * 255);
     
     red   = color;
     green = color;
@@ -50,7 +46,7 @@ void painting(const double x1, const double x2,
         const double y1, const double y2,
         const int32_t width, const int32_t height,
         const char* file_name, const bool progress_bar,
-        const int palette) {
+        const int palette, const size_t MAX_ITER) {
     
     cimg_library::CImg<unsigned char> img(width, height, 1, 3);
     
@@ -69,7 +65,7 @@ void painting(const double x1, const double x2,
         if (progress_bar && ((i + 1) % line_for_one_step == 0)) {
             double pr_bar_x = x1;
             for (size_t j = 0; j < horiz_steps; ++j) {
-                if (norm_iter_for_point(pr_bar_x, y) > 0.95)
+                if (iter_for_point(pr_bar_x, y, MAX_ITER) > MAX_ITER * 19 / 20)
                      { std::cout << '#'; }
                 else { std::cout << ' '; }
                 pr_bar_x += pr_bar_dx;
@@ -78,10 +74,10 @@ void painting(const double x1, const double x2,
         }
         
         for (int32_t j = 0; j < width; ++j) {
-            const double norm_clr = 1. - norm_iter_for_point(x, y);
+            const size_t iter = iter_for_point(x, y, MAX_ITER);
             
             unsigned char red, green, blue;
-            find_colors(norm_clr, red, green, blue, palette);
+            find_colors(iter, red, green, blue, palette, MAX_ITER);
             
             img(j, i, 0) = red;
             img(j, i, 1) = green;

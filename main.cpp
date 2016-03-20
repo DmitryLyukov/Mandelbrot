@@ -15,6 +15,7 @@ int main(int argc, char* argv[]) {
     bool progress_bar = false;
     double x1 = -2., x2 = 1.;
     double y1 = -1., y2 = 1.;
+    size_t MAX_ITER = 500;
 
     for (int i = 1; i < argc; ++i) {
         if (std::string (argv[i]) == std::string("-s")) {
@@ -41,10 +42,15 @@ int main(int argc, char* argv[]) {
             y2 = atof(argv[++i]);
             continue;
         }
+        if (std::string (argv[i]) == std::string("-i")) {
+            MAX_ITER = atol(argv[++i]);
+            continue;
+        }
     }
-    
+        
     painting(x1, x2, y1, y2, width_screen, height_screen, 
-             path_to_file.c_str(), progress_bar, palette
+             path_to_file.c_str(), progress_bar, palette,
+             MAX_ITER
     );
     
     return 0;
