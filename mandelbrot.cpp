@@ -42,9 +42,9 @@ void find_colors(const size_t iter, ColorMapElement &color_elem,
 }
 
 
-void painting_thread(PaintingParameters prm, std::atomic<size_t> &line,
-        cimg_library::CImg<unsigned char> &img,
-        std::vector<ColorMapElement> &colormap) {
+void painting_thread(const PaintingParameters &prm, std::atomic<size_t> &line,
+        std::vector<ColorMapElement> &colormap,
+        cimg_library::CImg<unsigned char> &img) {
     
     while (line < prm.height) {
         size_t i = line.fetch_add(1);
@@ -116,8 +116,8 @@ void painting(const double x1, const double x2,
     
     std::vector<std::thread> threads;
     for (size_t thr = 0; thr < num_of_threads; ++thr) {
-        threads.push_back(std::thread (painting_thread, prm, std::ref(line),
-                                       std::ref(img), std::ref(colormap)));
+        threads.push_back(std::thread (painting_thread, std::ref(prm), std::ref(line),
+                                       std::ref(colormap), std::ref(img)));
     }
     for (size_t thr = 0; thr < num_of_threads; ++thr) {
         threads.at(thr).join();

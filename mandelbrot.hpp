@@ -35,9 +35,9 @@ size_t iter_for_point(const std::complex<double> &c, const size_t MAX_ITER = 500
 void find_colors(const size_t iter, ColorMapElement &color_elem,
         const int palette = 3, const size_t MAX_ITER = 500);
 
-void painting_thread(PaintingParameters prm, std::atomic<size_t> &line,
-        cimg_library::CImg<unsigned char> &img,
-        std::vector<ColorMapElement> &colormap);
+void painting_thread(const PaintingParameters &prm, std::atomic<size_t> &line,
+        std::vector<ColorMapElement> &colormap,
+        cimg_library::CImg<unsigned char> &img);
 
 void painting(const double x1, const double x2,
         const double y1, const double y2,
