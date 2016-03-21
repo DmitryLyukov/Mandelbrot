@@ -16,6 +16,7 @@ int main(int argc, char* argv[]) {
     double x1 = -2., x2 = 1.;
     double y1 = -1., y2 = 1.;
     size_t MAX_ITER = 500;
+    size_t num_of_threads = std::thread::hardware_concurrency();
 
     for (int i = 1; i < argc; ++i) {
         if (std::string (argv[i]) == std::string("-s")) {
@@ -46,13 +47,21 @@ int main(int argc, char* argv[]) {
             MAX_ITER = atol(argv[++i]);
             continue;
         }
+        if (std::string (argv[i]) == std::string("-j")) {
+            num_of_threads = atol(argv[++i]);
+            continue;
+        }
+    }
+    
+    if (num_of_threads == 0) {
+        num_of_threads = 1;
     }
     
     std::vector<ColorMapElement> colormap(MAX_ITER + 1);
     
     painting(x1, x2, y1, y2, width_screen, height_screen, 
              colormap, path_to_file.c_str(), progress_bar,
-             palette, MAX_ITER
+             palette, MAX_ITER, num_of_threads
     );
     
     return 0;

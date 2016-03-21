@@ -42,53 +42,85 @@ void find_colors(const size_t iter, ColorMapElement &color_elem,
 }
 
 
-void painting(const double x1, const double x2,
-        const double y1, const double y2,
-        const int32_t width, const int32_t height,
-        std::vector<ColorMapElement> &colormap,
-        const char* file_name, const bool progress_bar,
-        const int palette, const size_t MAX_ITER) {
+void painting_thread(PaintingParameters prm, std::atomic<size_t> &line,
+        cimg_library::CImg<unsigned char> &img,
+        std::vector<ColorMapElement> &colormap) {
     
-    cimg_library::CImg<unsigned char> img(width, height, 1, 3);
-    
-    const double dy = (y2 - y1) / height;
-    const double dx = (x2 - x1) / width;
-    
-    const size_t horiz_steps = 60;
-    const size_t line_for_one_step = width / horiz_steps * 4 / 3;
-    const double pr_bar_dx = (x2 - x1) / horiz_steps;
-    
-    double y = y2;
-    
-    for (int32_t i = 0; i < height; ++i) {
-        double x = x1;
+    while (line < prm.height) {
+        size_t i = line.fetch_add(1);
+        if (i >= prm.height) {
+            break;
+        }
         
-        if (progress_bar && ((i + 1) % line_for_one_step == 0)) {
-            double pr_bar_x = x1;
-            for (size_t j = 0; j < horiz_steps; ++j) {
-                if (iter_for_point(pr_bar_x, y, MAX_ITER) > MAX_ITER * 19 / 20)
+        double x = prm.x1;
+        const double y = prm.y2 - i * prm.dy;
+        
+        if (prm.progress_bar && ((i + 1) % prm.line_for_one_step == 0)) {
+            double pr_bar_x = prm.x1;
+            for (size_t j = 0; j < prm.horiz_steps; ++j) {
+                if (iter_for_point(pr_bar_x, y, prm.MAX_ITER) > prm.MAX_ITER * 19 / 20)
                      { std::cout << '#'; }
                 else { std::cout << ' '; }
-                pr_bar_x += pr_bar_dx;
+                pr_bar_x += prm.pr_bar_dx;
             }
             std::cout << std::endl;
         }
         
-        for (int32_t j = 0; j < width; ++j) {
-            const size_t iter = iter_for_point(x, y, MAX_ITER);
+        for (int32_t j = 0; j < prm.width; ++j) {
+            const size_t iter = iter_for_point(x, y, prm.MAX_ITER);
             
             if (!colormap[iter].use) {
-                find_colors(iter, colormap[iter], palette, MAX_ITER);
+                find_colors(iter, colormap[iter], prm.palette, prm.MAX_ITER);
             }
             
             img(j, i, 0) = colormap[iter].red;
             img(j, i, 1) = colormap[iter].green;
             img(j, i, 2) = colormap[iter].blue;
             
-            x += dx;
+            x += prm.dx;
         }
-        
-        y -= dy;
+    }
+}
+
+
+void painting(const double x1, const double x2,
+        const double y1, const double y2,
+        const int32_t width, const int32_t height,
+        std::vector<ColorMapElement> &colormap,
+        const char* file_name, const bool progress_bar,
+        const int palette, const size_t MAX_ITER,
+        const size_t num_of_threads) {
+    
+    cimg_library::CImg<unsigned char> img(width, height, 1, 3);
+    
+    PaintingParameters prm;
+    
+    prm.MAX_ITER = MAX_ITER;
+    prm.palette  = palette;
+    prm.width    = width;
+    prm.height   = height;
+    
+    prm.dy = (y2 - y1) / height;
+    prm.dx = (x2 - x1) / width;
+    prm.x1 = x1;
+    prm.y2 = y2;
+    
+    prm.progress_bar = progress_bar;
+    if (progress_bar) {
+        prm.horiz_steps = 60;
+        prm.line_for_one_step = width / prm.horiz_steps * 4 / 3;
+        prm.pr_bar_dx = (x2 - x1) / prm.horiz_steps;
+    }
+
+    std::atomic<size_t> line(0);
+    
+    std::vector<std::thread> threads;
+    for (size_t thr = 0; thr < num_of_threads; ++thr) {
+        threads.push_back(std::thread (painting_thread, prm, std::ref(line),
+                                       std::ref(img), std::ref(colormap)));
+    }
+    for (size_t thr = 0; thr < num_of_threads; ++thr) {
+        threads.at(thr).join();
     }
     
     img.save_png(file_name);
