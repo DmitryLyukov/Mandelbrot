@@ -93,6 +93,9 @@ void painting(const double x1, const double x2,
     
     cimg_library::CImg<unsigned char> img(width, height, 1, 3);
     
+    std::chrono::time_point<std::chrono::system_clock> start_time, end_time;
+    start_time = std::chrono::system_clock::now();
+    
     PaintingParameters prm;
     
     prm.MAX_ITER = MAX_ITER;
@@ -123,5 +126,15 @@ void painting(const double x1, const double x2,
         threads.at(thr).join();
     }
     
+    end_time = std::chrono::system_clock::now();
+    std::chrono::duration<double> calculation_second = end_time - start_time;
+    std::cout << std::endl << "Calculation time: "
+              << calculation_second.count() << "s" << std::endl;
+    
+    start_time = std::chrono::system_clock::now();
     img.save_png(file_name);
+    end_time = std::chrono::system_clock::now();
+    
+    std::chrono::duration<double> save_second = end_time - start_time;
+    std::cout << "Time of saving: " << save_second.count() << "s" << std::endl;
 }
