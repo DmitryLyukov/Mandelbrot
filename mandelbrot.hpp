@@ -8,6 +8,7 @@
 #include <iostream>
 #include <thread>
 #include <atomic>
+#include <chrono>
 
 #include "CImg.h"
 
